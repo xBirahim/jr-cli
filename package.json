@@ -1,21 +1,27 @@
 {
   "name": "jr-cli",
   "version": "1.0.0",
-  "description": "CLI pour réserver des cours chez John Reed Fitness via l'API non-officielle",
-  "main": "jr.js",
+  "description": "CLI for booking classes at John Reed Fitness via the unofficial API",
+  "main": "dist/index.js",
   "bin": {
-    "jr": "./jr.js"
+    "jr": "./dist/index.js"
   },
   "scripts": {
-    "list": "node jr.js list",
-    "book": "node jr.js book",
-    "status": "node jr.js status",
-    "cancel": "node jr.js cancel",
-    "login": "node jr.js login"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "list": "node dist/index.js list",
+    "book": "node dist/index.js book",
+    "status": "node dist/index.js status",
+    "cancel": "node dist/index.js cancel",
+    "login": "node dist/index.js login"
   },
-  "keywords": ["john-reed", "fitness", "booking", "cli", "gym", "sport"],
+  "keywords": ["john-reed", "fitness", "gym", "booking", "cli", "sport", "rsg-group", "mcfitness"],
   "license": "MIT",
   "engines": {
     "node": ">=16"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
   }
 }

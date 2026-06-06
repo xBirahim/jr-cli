@@ -1,88 +1,89 @@
 # JR-CLI — John Reed Fitness CLI
 
-**Réserve tes cours de sport directement depuis ton terminal.**
+**Book gym classes from your terminal.**
 
-Reverse-engineering de l'API MySports/NOX utilisée par John Reed Fitness (groupe RSG), McFIT, et HEIMAT.
+Reverse-engineered API client for the MySports/NOX platform used by John Reed Fitness (RSG Group), McFIT, and HEIMAT.
 
-## Installation
+## Install
 
 ```bash
-git clone https://github.com/.../jr-cli.git
+git clone https://github.com/YOUR_USER/jr-cli.git
 cd jr-cli
-npm install  # optionnel, juste pour package.json
+npm install
+npm run build
 ```
 
-Zéro dépendance. Nécessite uniquement Node.js ≥ 16 et `curl`.
+Zero runtime dependencies. Requires Node.js ≥ 16 and `curl`.
 
 ## Setup
 
 ```bash
-# 1. Configure tes identifiants John Reed
-echo 'JR_EMAIL=ton@email.com'  > ~/.jr.env
-echo 'JR_P...ofJR_PASSWORD=ton_mot_de_passe' >> ~/.jr.env
+# 1. Set your John Reed credentials
+echo 'JR_EMAIL=you@email.com'  > ~/.jr.env
+echo 'JR_PASSWORD=*** >> ~/.jr.env
 chmod 600 ~/.jr.env
 
-# 2. Connecte-toi
-node jr.js login
-# ✅ Connecté en tant que Papa birahim SEYE
+# 2. Log in
+node dist/index.js login
+# ✅ Logged in as John Doe
 #    Studio: John Reed Lyon
 
-# 3. C'est prêt !
-node jr.js list
+# 3. Ready!
+node dist/index.js list
 ```
 
 ## Usage
 
 ```
-node jr.js setup     → Guide de configuration
-node jr.js login     → Connexion (Basic Auth)
-node jr.js whoami    → Infos du compte
-node jr.js list      → Liste les cours à venir
-node jr.js book <id> → Réserve un cours
-node jr.js cancel <id> → Annule une réservation
-node jr.js status    → Affiche mes réservations
+node dist/index.js setup     → Setup guide
+node dist/index.js login     → Log in (Basic Auth)
+node dist/index.js whoami    → Account info
+node dist/index.js list      → List upcoming courses
+node dist/index.js book <id> → Book a course
+node dist/index.js cancel <id> → Cancel a booking
+node dist/index.js status    → Show my bookings
 ```
 
 ### Options
 
 | Flag | Description |
 |------|-------------|
-| `--json` | Sortie JSON pour scripts/parsing |
-| `--studio <id>` | Forcer un studio spécifique |
+| `--json` | Machine-readable JSON output |
+| `--studio <id>` | Override studio (auto-detected otherwise) |
 
-### Exemples
-
-```bash
-# Lister les cours avec les barres de remplissage
-node jr.js list
-
-# Sortie JSON pour automatisation
-node jr.js list --json | jq '.[] | select(.spots > 0)'
-
-# Réserver le cours 9387363735
-node jr.js book 9387363735
-
-# Utiliser un autre studio (ex: Berlin Prenzlauer Berg)
-node jr.js list --studio 1404492860
-```
-
-## Automatisation
+### Examples
 
 ```bash
-# Dans un cron ou un script :
-source ~/.jr.env && node jr.js list --json
+# List courses with occupancy bars
+node dist/index.js list
 
-# Réserver un cours spécifique dès qu'il est dispo :
-source ~/.jr.env && node jr.js book 9387363735
+# Machine-readable output for scripting
+node dist/index.js list --json | jq '.[] | select(.spots > 0)'
+
+# Book course 9387363735
+node dist/index.js book 9387363735
+
+# Use a different studio (e.g. Berlin Prenzlauer Berg)
+node dist/index.js list --studio 1404492860
 ```
 
-La session est auto-gérée : si elle expire, une nouvelle est automatiquement créée.
+## Automation
 
-## API Reverse-Engineered
+```bash
+# In a cron job or script:
+source ~/.jr.env && node dist/index.js list --json
 
-L'API utilisée est **MySports/NOX** par Magicline, utilisée par le groupe RSG (John Reed, McFIT, HEIMAT).
+# Book a specific course as soon as it is available:
+source ~/.jr.env && node dist/index.js book 9387363735
+```
 
-### Authentification
+The session is auto-managed: if it expires, a new one is automatically created.
+
+## API Reference (Reverse-Engineered)
+
+The underlying API is **MySports/NOX** by Magicline, used by the RSG Group (John Reed, McFIT, HEIMAT).
+
+### Authentication
 
 ```
 POST https://my.johnreed.fitness/login
@@ -94,21 +95,21 @@ Content-Type: application/json
 → Set-Cookie: SESSION=<uuid>
 ```
 
-Le cookie SESSION est valable environ une heure. Les requêtes suivantes doivent inclure `Cookie: SESSION=...`.
+The SESSION cookie is valid for about one hour. All subsequent requests must include `Cookie: SESSION=...`.
 
 ### Endpoints
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| `GET` | `/nox/v1/me/info` | Infos utilisateur (nom, studio, customer ID) |
-| `GET` | `/nox/public/v1/appointmentfilter/course?organizationUnitIds=X` | Filtres disponibles (studios, catégories) |
-| `GET` | `/nox/v1/bookableitems/course/upcoming?organizationUnitId=X` | Liste des cours à venir |
-| `GET` | `/nox/v1/bookableitems/course/{id}` | Détail d'un cours |
-| `GET` | `/nox/v1/studios/{id}/utilization` | Taux d'occupation de la salle |
-| `POST` | `/nox/v1/calendar/bookcourse` | Réserver un cours |
-| `DELETE` | `/nox/v1/calendar/{id}/cancel-for-member` | Annuler une réservation |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/nox/v1/me/info` | User info (name, studio, customer ID) |
+| `GET` | `/nox/public/v1/appointmentfilter/course?organizationUnitIds=X` | Available filters (studios, categories) |
+| `GET` | `/nox/v1/bookableitems/course/upcoming?organizationUnitId=X` | Upcoming course list |
+| `GET` | `/nox/v1/bookableitems/course/{id}` | Course detail |
+| `GET` | `/nox/v1/studios/{id}/utilization` | Gym occupancy rate |
+| `POST` | `/nox/v1/calendar/bookcourse` | Book a course |
+| `DELETE` | `/nox/v1/calendar/{id}/cancel-for-member` | Cancel a booking |
 
-### Réservation
+### Booking
 
 ```json
 POST /nox/v1/calendar/bookcourse
@@ -118,15 +119,16 @@ POST /nox/v1/calendar/bookcourse
 }
 ```
 
-### Headers requis
+### Required Headers
 
 ```
 x-tenant: rsg-group
 x-nox-client-type: WEB
 x-nox-web-context: v=1
+x-public-facility-group: JOHNREED-65A11AB8FA704F88B2D8EF52523C576A
 ```
 
-### IDs de studios connus
+### Known Studio IDs
 
 | Studio | ID |
 |--------|----|
@@ -134,10 +136,32 @@ x-nox-web-context: v=1
 | John Reed Paris So Ouest | 3069409560 |
 | John Reed Berlin Prenzlauer Berg | 1404492860 |
 | John Reed Wien Schottentor | 3961971910 |
-| _...et tous les autres (utilise `--studio <id>`)_ |
+| _...and all others (use `--studio <id>`)_ |
 
-Trouve l'ID de ton studio : connecte-toi sur le site, ouvre DevTools → Network, cherche une requête contenant `organizationUnitId`.
+Find your studio ID: log in on the website, open DevTools → Network, look for a request containing `organizationUnitId`.
 
-## Licence
+## Project Structure
+
+```
+jr-cli/
+├── src/
+│   ├── index.ts             # CLI entry point
+│   ├── api.ts               # HTTP client, types, session management
+│   ├── config.ts            # Env loading, constants, CLI flags
+│   └── commands/
+│       ├── list.ts
+│       ├── book.ts
+│       ├── cancel.ts
+│       ├── status.ts
+│       ├── login.ts
+│       ├── whoami.ts
+│       └── setup.ts
+├── dist/                    # Compiled output (git-ignored)
+├── tsconfig.json
+├── package.json
+└── README.md
+```
+
+## License
 
 MIT
