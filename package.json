@@ -1,0 +1,21 @@
+{
+  "name": "jr-cli",
+  "version": "1.0.0",
+  "description": "CLI pour réserver des cours chez John Reed Fitness via l'API non-officielle",
+  "main": "jr.js",
+  "bin": {
+    "jr": "./jr.js"
+  },
+  "scripts": {
+    "list": "node jr.js list",
+    "book": "node jr.js book",
+    "status": "node jr.js status",
+    "cancel": "node jr.js cancel",
+    "login": "node jr.js login"
+  },
+  "keywords": ["john-reed", "fitness", "booking", "cli", "gym", "sport"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  }
+}
