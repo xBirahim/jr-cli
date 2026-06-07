@@ -7,7 +7,7 @@ Reverse-engineered API client for the MySports/NOX platform used by John Reed Fi
 ## Install
 
 ```bash
-git clone https://github.com/YOUR_USER/jr-cli.git
+git clone https://github.com/xBirahim/jr-cli.git
 cd jr-cli
 npm install
 npm run build
@@ -103,7 +103,8 @@ The SESSION cookie is valid for about one hour. All subsequent requests must inc
 |--------|----------|-------------|
 | `GET` | `/nox/v1/me/info` | User info (name, studio, customer ID) |
 | `GET` | `/nox/public/v1/appointmentfilter/course?organizationUnitIds=X` | Available filters (studios, categories) |
-| `GET` | `/nox/v1/bookableitems/course/upcoming?organizationUnitId=X` | Upcoming course list |
+| `GET` | `/nox/v1/bookableitems/course/upcoming?organizationUnitId=X` | Upcoming course list (excludes full courses) |
+| `GET` | `/nox/v2/bookableitems/courses/with-canceled?startDate=X&endDate=Y&employeeIds=&organizationUnitIds=X` | ALL courses including full ones and canceled |
 | `GET` | `/nox/v1/bookableitems/course/{id}` | Course detail |
 | `GET` | `/nox/v1/studios/{id}/utilization` | Gym occupancy rate |
 | `POST` | `/nox/v1/calendar/bookcourse` | Book a course |
