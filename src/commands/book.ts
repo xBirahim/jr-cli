@@ -20,11 +20,17 @@ export function cmdBook(id: string | undefined): void {
       console.log('⚠️  Already booked!');
     } else if (msg.includes('retrouvé') || msg.includes('not found')) {
       console.error('❌ Invalid course ID. Use "list" to find IDs.');
+      process.exit(1);
+    } else if (msg.includes('earliest') || msg.includes('plus tôt')) {
+      console.error('❌ Booking not yet open:', msg);
+      process.exit(1);
     } else {
       console.error('❌', msg);
+      process.exit(1);
     }
   } else if ('__error' in result) {
     console.error('❌', (result as { __error: string }).__error);
+    process.exit(1);
   } else {
     console.log('✅ Booked!');
   }
